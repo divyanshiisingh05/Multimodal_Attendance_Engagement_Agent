@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multimodal Attendance & Engagement Agent</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">MA</div><div><strong>ClassPulse</strong><span>Multimodal Attendance & Engagement Agent</span></div></div>
+  <div class="offline"><i></i> OFFLINE DEMO</div>
+</header>
+<main class="container">
+  <section class="welcome">
+    <div><p class="eyebrow">CLASSROOM INTELLIGENCE</p><h1>Good afternoon, Educator.</h1><p class="muted">A privacy-first snapshot of attendance, participation signals, and session trends.</p></div>
+    <div class="session"><span>LIVE SESSION</span><strong>AI & Machine Learning</strong><small>Room 204 · Session 04</small></div>
+  </section>
+  <div class="notice"><b>Demo mode:</b> sample records and illustrative engagement indicators only. This prototype does not identify faces, record audio/video, or infer any real student's attention.</div>
+  <section class="stats">
+    <article class="stat"><div class="stat-label">Enrolled learners <span>↗</span></div><div class="stat-number" id="enrolled">6</div><div class="stat-foot">Sample class roster</div></article>
+    <article class="stat"><div class="stat-label">Attendance rate <span>◷</span></div><div class="stat-number" id="attendanceRate">83.3%</div><div class="stat-foot"><b class="green">5 present or late</b> in demo data</div></article>
+    <article class="stat"><div class="stat-label">Avg. engagement indicator <span>⌁</span></div><div class="stat-number" id="avgEngagement">80%</div><div class="stat-foot">Illustrative, not a psychological measure</div></article>
+    <article class="stat"><div class="stat-label">Session duration <span>◴</span></div><div class="stat-number">48 <small>min</small></div><div class="stat-foot">Sample session timeline</div></article>
+  </section>
+  <section class="grid">
+    <article class="panel attendance-panel">
+      <div class="panel-head"><div><p class="eyebrow">SESSION ROSTER</p><h2>Attendance overview</h2></div><button class="secondary" onclick="location.href='/api/export'">↓ Export CSV</button></div>
+      <div class="table-wrap"><table><thead><tr><th>LEARNER</th><th>STATUS</th><th>PRESENCE</th><th>ENGAGEMENT</th></tr></thead><tbody id="studentRows"></tbody></table></div>
+      <p class="small muted">Names are fictional. Status is seeded demo data, not camera-derived.</p>
+    </article>
+    <article class="panel trend-panel">
+      <div class="panel-head"><div><p class="eyebrow">SESSION DYNAMICS</p><h2>Engagement trend</h2></div><span class="pill">Illustrative</span></div>
+      <div class="chart"><div class="ylabels"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><svg viewBox="0 0 520 210" role="img" aria-label="Illustrative engagement trend line"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#6d70e8" stop-opacity=".22"/><stop offset="1" stop-color="#6d70e8" stop-opacity="0"/></linearGradient></defs><path d="M0 100 L65 76 L130 89 L195 45 L260 61 L325 96 L390 70 L455 40 L520 54 L520 200 L0 200 Z" fill="url(#fill)"/><path d="M0 100 L65 76 L130 89 L195 45 L260 61 L325 96 L390 70 L455 40 L520 54" fill="none" stroke="#6d70e8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><g fill="#fff" stroke="#6d70e8" stroke-width="3"><circle cx="0" cy="100" r="4"/><circle cx="65" cy="76" r="4"/><circle cx="130" cy="89" r="4"/><circle cx="195" cy="45" r="4"/><circle cx="260" cy="61" r="4"/><circle cx="325" cy="96" r="4"/><circle cx="390" cy="70" r="4"/><circle cx="455" cy="40" r="4"/><circle cx="520" cy="54" r="4"/></g></svg></div>
+      <div class="xlabels"><span>00 min</span><span>10 min</span><span>20 min</span><span>30 min</span><span>40 min</span><span>48 min</span></div>
+      <div class="insight"><div class="insight-icon">✦</div><div><strong>Session insight</strong><p>Engagement appears to dip around the middle of this illustrative session. Consider a quick recap or interactive question.</p></div></div>
+    </article>
+  </section>
+  <section class="grid lower">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">AGENT ASSIST</p><h2>Teaching suggestions</h2></div><span class="spark">✦</span></div>
+      <p class="muted">Generate suggestions from the demo session indicators.</p>
+      <button class="primary" id="suggestBtn">Generate suggestions <span>→</span></button>
+      <ul id="suggestions" class="suggestions"><li>Click “Generate suggestions” to get context-aware demo recommendations.</li></ul>
+      <p class="small muted">Local rule-based suggestions; no cloud API or model is called.</p>
+    </article>
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">PRIVACY BY DESIGN</p><h2>Responsible use</h2></div><span class="shield">⌑</span></div>
+      <div class="privacy-row"><span class="check">✓</span><div><strong>Offline-first prototype</strong><p>Runs on your computer; no third-party AI service.</p></div></div>
+      <div class="privacy-row"><span class="check">✓</span><div><strong>Human-in-the-loop</strong><p>Suggestions support educators, never make decisions.</p></div></div>
+      <div class="privacy-row"><span class="check">✓</span><div><strong>Transparent indicators</strong><p>Behavioral cues can be ambiguous and must not be treated as ground truth.</p></div></div>
+    </article>
+  </section>
+  <footer>ClassPulse · Multimodal Attendance & Engagement Agent <span>Prototype UI · v1.0</span></footer>
+</main>
+<script>
+async function loadData(){
+ const r=await fetch('/api/attendance'); const data=await r.json(); const ss=data.students;
+ document.getElementById('enrolled').textContent=ss.length;
+ const attended=ss.filter(s=>s.status!=='Absent').length;
+ document.getElementById('attendanceRate').textContent=(attended/ss.length*100).toFixed(1)+'%';
+ const engaged=ss.filter(s=>s.status!=='Absent');
+ document.getElementById('avgEngagement').textContent=Math.round(engaged.reduce((a,s)=>a+s.engagement,0)/engaged.length)+'%';
+ document.getElementById('studentRows').innerHTML=ss.map(s=>`<tr><td><div class="learner"><div class="avatar">${s.name.split(' ').map(x=>x[0]).join('')}</div><div><strong>${s.name}</strong><small>${s.id}</small></div></div></td><td><span class="status ${s.status.toLowerCase()}">${s.status}</span></td><td><div class="progress"><i style="width:${s.presence}%"></i></div><small>${s.presence}%</small></td><td><div class="progress purple"><i style="width:${s.engagement}%"></i></div><small>${s.engagement}%</small></td></tr>`).join('');
+}
+document.getElementById('suggestBtn').addEventListener('click',async()=>{
+ const btn=document.getElementById('suggestBtn'); btn.textContent='Thinking locally…';
+ const avg=parseFloat(document.getElementById('avgEngagement').textContent);
+ const attendance=parseFloat(document.getElementById('attendanceRate').textContent);
+ const r=await fetch('/api/suggestions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avg_engagement:avg,attendance_rate:attendance})});
+ const data=await r.json(); document.getElementById('suggestions').innerHTML=data.suggestions.map(x=>`<li>${x}</li>`).join('');
+ btn.innerHTML='Regenerate suggestions <span>↻</span>';
+});
+loadData();
+</script>
+</body></html>
